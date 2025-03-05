@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy import Column, String, Integer, DateTime, Enum
 from sqlalchemy.ext.declarative import declarative_base
-import enum
+
 from sqlalchemy.orm import sessionmaker
 
 with open("moje_heslo.txt", 'r') as file:
