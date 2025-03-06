@@ -1,3 +1,7 @@
+"""
+Vypiště všechny rezervace pro klienta s id = 3. Vyzkoušejte query() i select().
+"""
+
 from sqlalchemy import create_engine, text, ForeignKey
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, String, Integer, Date

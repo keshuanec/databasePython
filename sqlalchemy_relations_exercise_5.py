@@ -1,7 +1,8 @@
 """
-Vypište všechny vozy pronajaté zákazníkem s id = 5. Auta se mohou opakovat, chceme historii pronájmů.
-Vyzkoušejte query() i select().
+Vypiště identifikační údaje všech zákazníků a nákladů na rezervaci, které zákazníkům vznikly a které jsou
+vyšší než 1100 a rezervace byla zahájena po 13. 07. 2020 (>="2020-07-14").
 """
+
 
 from sqlalchemy import create_engine, text, ForeignKey
 from sqlalchemy.orm import declarative_base
@@ -10,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import select
 from sqlalchemy import join
+from sqlalchemy import and_
 
 with open("moje_heslo.txt", 'r') as file:
     password = file.read()
@@ -69,26 +71,13 @@ class Bookings(base):
 Session = sessionmaker(bind=eng)
 
 session = Session()
-#1
-result = session.query(Clients).filter_by(client_id=5)
-for client in result:
-    for booking in client.bookings:
-        print(booking.car)
 
-#2
-result = session.query(Bookings).filter_by(client_id=5)
-for booking in result:
-    print(booking.car)
-
-#3
-"""SELECT * FROM Cars 
-JOIN Bookings on Cars.car_id = Bookings.car_id
-WHERE Bookings.client_id = 5
-"""
-j = join(Bookings, Cars, Bookings.car_id == Cars.car_id)
-s = select(Cars).select_from(j).where(Bookings.client_id==5)
-
-conn = eng.connect()
-result = conn.execute(s)
-for car in result:
-    print(car)
+result = (
+    session.query(Clients.client_id, Bookings.total_amount)
+    .join(Bookings)
+    .filter(
+        and_(Bookings.total_amount > 1100, Bookings.start_date >= '2020-07-14')
+    )
+    .all()
+)
+print(result)

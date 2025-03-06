@@ -1,15 +1,16 @@
 """
-Vypište všechny vozy pronajaté zákazníkem s id = 5. Auta se mohou opakovat, chceme historii pronájmů.
-Vyzkoušejte query() i select().
+Vypiště seznam celkových nákladů na všechny rezervace pro každého zákazníka, jméno a příjmení zákazníka u rezervací,
+které byly provedeny v období od 10. do 17. července 2020.
 """
 
-from sqlalchemy import create_engine, text, ForeignKey
+from sqlalchemy import create_engine, text, ForeignKey, func
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, String, Integer, Date
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import select
 from sqlalchemy import join
+from sqlalchemy import and_
 
 with open("moje_heslo.txt", 'r') as file:
     password = file.read()
@@ -69,26 +70,22 @@ class Bookings(base):
 Session = sessionmaker(bind=eng)
 
 session = Session()
-#1
-result = session.query(Clients).filter_by(client_id=5)
-for client in result:
-    for booking in client.bookings:
-        print(booking.car)
 
-#2
-result = session.query(Bookings).filter_by(client_id=5)
-for booking in result:
-    print(booking.car)
+result = (
+    session.query(Clients.client_id, func.sum(Bookings.total_amount))
+    .join(Bookings)
+    .filter(
+        and_(Bookings.start_date <= '2020-07-17', Bookings.start_date >= '2020-07-10')
+    )
+    .group_by(Clients.client_id)
+    .all()
+)
+print(result)
 
-#3
-"""SELECT * FROM Cars 
-JOIN Bookings on Cars.car_id = Bookings.car_id
-WHERE Bookings.client_id = 5
-"""
-j = join(Bookings, Cars, Bookings.car_id == Cars.car_id)
-s = select(Cars).select_from(j).where(Bookings.client_id==5)
-
-conn = eng.connect()
-result = conn.execute(s)
-for car in result:
-    print(car)
+# Hromadka pro 6:
+# 6, 1900
+# 6, 1200
+#
+# Hromadka pro 7:
+# 7, 1800
+# 7, 1700
