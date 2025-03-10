@@ -1,7 +1,9 @@
 """
-Vypiště seznam celkových nákladů na všechny rezervace pro každého zákazníka, jméno a příjmení zákazníka u rezervací,
-které byly provedeny v období od 10. do 17. července 2020.
+Napište dotaz smt v jazyce SQL a předejte jej funkci query(). smt by měl vrátit id rezervací,
+pro které je hodnota rezervace větší než hodnota zadaná hlavnímu dotazu jako parametr.
 """
+
+
 
 from sqlalchemy import create_engine, text, ForeignKey, func
 from sqlalchemy.orm import declarative_base
@@ -71,21 +73,6 @@ Session = sessionmaker(bind=eng)
 
 session = Session()
 
-result = (
-    session.query(Clients.client_id, Clients.name, Clients.surname, func.sum(Bookings.total_amount))
-    .join(Bookings)
-    .filter(
-        and_(Bookings.end_date <= '2020-07-17', Bookings.start_date >= '2020-07-10')
-    )
-    .group_by(Clients.client_id)
-    .all()
-)
+smt = text('SELECT booking_id from bookings where total_amount > :amount')
+result = session.query(Bookings).from_statement(smt).params(amount=200).all()
 print(result)
-
-# Hromadka pro 6:
-# 6, 1900
-# 6, 1200
-#
-# Hromadka pro 7:
-# 7, 1800
-# 7, 1700
