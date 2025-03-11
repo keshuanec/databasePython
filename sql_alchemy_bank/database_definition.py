@@ -1,10 +1,3 @@
-"""
-vytvořit 3 tabulky banky
-1. Tabulka - clients -> id, jmeno, prijmeni, adresa, datum narozeni
-2. Tabulka - ucet -> id, cislo uctu, druh uctu
-3. Tabulka - ransakce -> id, cislo uctu, castka, cas transakce, datum transakce
-"""
-
 from sqlalchemy import create_engine, text, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, Relationship
 from sqlalchemy import Column, String, Integer, Date, DateTime, Float
@@ -14,7 +7,6 @@ from datetime import datetime
 with open("../moje_heslo.txt", "r") as file:
     password = file.read()
 
-eng = create_engine(f'mysql+mysqlconnector://root:{password}@localhost:3306/bank')
 
 base = declarative_base()
 
@@ -47,7 +39,5 @@ class Transaction(base):
     transaction_time = Column(DateTime, nullable=False, default=datetime.now)
 
 
-base.metadata.drop_all(eng)
-base.metadata.create_all(eng)
 
 
