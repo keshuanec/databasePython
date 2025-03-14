@@ -29,6 +29,8 @@ class Account(base):
     account_type = Column(String(30), nullable=False)
     client_id = Column(Integer, ForeignKey(column="clients.id", ondelete="CASCADE"))  # column určuje jaký sloupec v jaké databázi to bere. ondelete CASCADE pri smazani klienta smaze vsechny ostatni ucty klienta
 
+    def __repr__(self):
+        return f"cislo uctu: {self.account_number}, typu uctu: {self.account_type}"
 class Transaction(base):
     __tablename__ = "transactions"
 

@@ -19,7 +19,7 @@ session.add_all(
     ]
 )
 
-result = session.query(Client.accounts)
+result = session.query(Client).all()
 for client in result:
-    print(client)
+    print(f"klient {client.name} {client.surname} má účty: {client.accounts}")
 #session.commit()
